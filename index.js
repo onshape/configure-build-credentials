@@ -57,14 +57,20 @@ async function configureAwsCredentials () {
 
 async function loginToECR () {
   const profile = core.getInput(INPUT_ECR_PROFILE) || core.getInput(INPUT_AWS_PROFILE) || 'default';
-  const region = core.getInput(INPUT_ECR_REGION) || core.getInput(INPUT_AWS_REGION);
-  const registry = core.getInput(INPUT_ECR_REGISTRY).startsWith('http') ? core.getInput(INPUT_ECR_REGISTRY) :
-    `https://${ core.getInput(INPUT_ECR_REGISTRY) }.dkr.ecr.${ region }.amazonaws.com`;
+
+  let region = core.getInput(INPUT_ECR_REGION) || core.getInput(INPUT_AWS_REGION);
+  if (!region && core.getInput(INPUT_ECR_REGISTRY).includes('.amazonaws.com')) {
+    region = core.getInput(INPUT_ECR_REGISTRY).replace(/^.*\.dkr\.ecr\.(.*?)\.amazonaws\.com$/, '$1');
+  }
+
+  const registry = core.getInput(INPUT_ECR_REGISTRY).includes('.amazonaws.com') ?
+    core.getInput(INPUT_ECR_REGISTRY) :
+    `${ core.getInput(INPUT_ECR_REGISTRY) }.dkr.ecr.${ region }.amazonaws.com`;
 
   await exec(`aws ecr get-login-password --profile ${ profile } --region ${ region } |` +
              `docker login -u AWS ${ registry } --password-stdin`, { shell: '/bin/bash' });
 
-  console.log(`Successfully logged into ECR registry ${ registry.replace('https://', '') }`);
+  console.log(`Successfully logged into ECR registry ${ registry } [${ profile }]`);
 }
 
 async function configureNpmToken () {

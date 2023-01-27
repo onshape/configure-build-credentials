@@ -8,7 +8,7 @@ This action configures any combination of common credentials for Onshape build e
 
 #### `aws-profile`
 
-The Profile name to use, Default: `"codebuild"`
+The AWS profile name to use, Default: `"default"`
 
 #### `aws-access-key-id`
 
@@ -25,6 +25,10 @@ The default AWS region, Default: `"us-west-2"`
 **Required** To configure AWS credentials you must specify at least `aws-access-key` and `aws-secret-key`
 
 ### AWS ECR Login
+
+#### `ecr-profile`
+
+The AWS profile name to use for ECR logins, falls back on `aws-profile` if not specified
 
 #### `ecr-registry`
 

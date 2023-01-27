@@ -4,7 +4,7 @@ inputs:
   aws-profile:
     description: 'AWS Profile name'
     required: false
-    default: 'codebuild'
+    default: 'default'
   aws-access-key-id:
     description: 'AWS Access Key'
     required: false
@@ -15,6 +15,10 @@ inputs:
     description: 'AWS Default Region'
     required: false
     default: 'us-west-2'
+  ecr-profile:
+    description: 'AWS Profile name to use for ECR logins'
+    required: false
+    default: 'default'
   ecr-region:
     description: 'ECR Region'
     required: false

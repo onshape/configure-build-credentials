@@ -57,7 +57,12 @@ async function configureAwsCredentials () {
 }
 
 async function loginToECR () {
-  const profile = INPUT_ECR_PROFILE || INPUT_AWS_PROFILE || AWS_DEFAULT_PROFILE;
+  let profile = INPUT_ECR_PROFILE || INPUT_AWS_PROFILE;
+  if (profile && profile !== AWS_DEFAULT_PROFILE) {
+    profile = `--profile ${ profile }`;
+  } else {
+    profile = '';
+  }
 
   let region = INPUT_ECR_REGION || INPUT_AWS_REGION;
   if (INPUT_ECR_REGISTRY.includes('.amazonaws.com')) {
@@ -67,8 +72,8 @@ async function loginToECR () {
   const registry = INPUT_ECR_REGISTRY.includes('.amazonaws.com') ? INPUT_ECR_REGISTRY :
     `${ INPUT_ECR_REGISTRY }.dkr.ecr.${ region }.amazonaws.com`;
 
-  await exec(`aws --profile ${ profile } ecr get-login-password --region ${ region } | ` +
-             `docker login -u AWS https://${ registry } --password-stdin`, { shell: '/bin/bash' });
+  await exec(`aws ecr get-login-password ${ profile } --region ${ region } | ` +
+             `docker login --username AWS --password-stdin ${ registry }`, { shell: '/bin/bash' });
 
   console.log(`Successfully logged into ECR registry ${ registry } [${ profile }]`);
 }

@@ -1,6 +1,6 @@
 {
   "name": "configure-build-credentials",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Configure common credentials for Onshape build environments",
   "main": "index.js",
   "author": "Mark Barr",

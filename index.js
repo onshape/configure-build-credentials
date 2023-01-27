@@ -80,7 +80,7 @@ async function loginToECR () {
 
 async function configureNpmToken () {
   const file = join(process.env.HOME, '.npmrc');
-  await fs.writeFile(file, `/registry.npmjs.org/:_authToken=${ INPUT_NPM_TOKEN }\n`);
+  await fs.writeFile(file, `//registry.npmjs.org/:_authToken=${ INPUT_NPM_TOKEN }\n`);
   await fs.chmod(file, DEFAULT_FILE_MODE);
 
   console.log(`Configured npm token in ${ file }`);

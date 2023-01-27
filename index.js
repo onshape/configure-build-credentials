@@ -10,8 +10,8 @@ const exec = util.promisify(childProcess.exec);
 //////////
 
 const INPUT_AWS_PROFILE = 'aws-profile';
-const INPUT_AWS_ACCESS_KEY = 'aws-access-key';
-const INPUT_AWS_SECRET_KEY = 'aws-secret-key';
+const INPUT_AWS_ACCESS_KEY = 'aws-access-key-id';
+const INPUT_AWS_SECRET_KEY = 'aws-secret-access-key';
 const INPUT_AWS_REGION = 'aws-region';
 
 const INPUT_ECR_REGION = 'ecr-region';
@@ -37,6 +37,8 @@ async function configureAwsCredentials () {
 
   await fs.writeFile(credentialsFile, credentials);
   await fs.chmod(credentialsFile, 0o600);
+
+  console.log(`Configured AWS credentials for [${ core.getInput(INPUT_AWS_PROFILE) } ]`);
 }
 
 async function loginToECR () {
@@ -46,12 +48,16 @@ async function loginToECR () {
 
   await exec(`aws ecr get-login-password --region ${ region } |` +
              `docker login -u AWS ${ registry } --password-stdin`, { shell: '/bin/bash' });
+
+  console.log(`Successfully logged into ECR registry ${ registry }`);
 }
 
 async function configureNpmToken () {
   const file = join(process.env.HOME, '.npmrc');
   await fs.writeFile(file, `/registry.npmjs.org/:_authToken=${ core.getInput(INPUT_NPM_TOKEN) }\n`);
   await fs.chmod(file, 0o600);
+
+  console.log(`Configured npm token in ${ file }`);
 }
 
 async function configureSshKey () {
@@ -61,6 +67,8 @@ async function configureSshKey () {
   const file = join(directory, core.getInput(INPUT_SSH_KEY_NAME));
   await fs.writeFile(file, core.getInput(INPUT_SSH_KEY));
   await fs.chmod(file, 0o600);
+
+  console.log(`Configured SSH key "${ core.getInput(INPUT_SSH_KEY_NAME) }"`);
 }
 
 //////////

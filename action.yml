@@ -5,10 +5,10 @@ inputs:
     description: 'AWS Profile name'
     required: false
     default: 'codebuild'
-  aws-access-key:
+  aws-access-key-id:
     description: 'AWS Access Key'
     required: false
-  aws-secret-key:
+  aws-secret-access-key:
     description: 'AWS Secret Access Key'
     required: false
   aws-region:
@@ -18,6 +18,7 @@ inputs:
   ecr-region:
     description: 'ECR Region'
     required: false
+    default: 'us-east-2'
   ecr-registry:
     description: 'ECR Repository ID'
     required: false

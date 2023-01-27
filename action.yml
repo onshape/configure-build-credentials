@@ -18,7 +18,6 @@ inputs:
   ecr-profile:
     description: 'AWS Profile name to use for ECR logins'
     required: false
-    default: 'default'
   ecr-region:
     description: 'ECR Region'
     required: false

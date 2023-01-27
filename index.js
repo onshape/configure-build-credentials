@@ -64,7 +64,7 @@ async function loginToECR () {
   await exec(`aws ecr get-login-password --profile ${ profile } --region ${ region } |` +
              `docker login -u AWS ${ registry } --password-stdin`, { shell: '/bin/bash' });
 
-  console.log(`Successfully logged into ECR registry ${ registry }`);
+  console.log(`Successfully logged into ECR registry ${ registry.replace('https://', '') }`);
 }
 
 async function configureNpmToken () {

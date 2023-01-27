@@ -7,6 +7,7 @@ const core = require('@actions/core');
 const childProcess = require('node:child_process');
 const exec = util.promisify(childProcess.exec);
 
+const AWS_DEFAULT_PROFILE = 'default';
 const DEFAULT_FILE_MODE = 0o600;
 
 //////////
@@ -32,7 +33,7 @@ async function configureAwsCredentials () {
   await fs.mkdir(directory, { recursive: true });
 
   // ~/.aws/config
-  const profileName = INPUT_AWS_PROFILE === 'default' ? INPUT_AWS_PROFILE :
+  const profileName = INPUT_AWS_PROFILE === AWS_DEFAULT_PROFILE ? INPUT_AWS_PROFILE :
     `profile ${ INPUT_AWS_PROFILE }`;
 
   const configFile = join(directory, 'config');
@@ -56,18 +57,18 @@ async function configureAwsCredentials () {
 }
 
 async function loginToECR () {
-  const profile = INPUT_ECR_PROFILE || INPUT_AWS_PROFILE || 'default';
+  const profile = INPUT_ECR_PROFILE || INPUT_AWS_PROFILE || AWS_DEFAULT_PROFILE;
 
   let region = INPUT_ECR_REGION || INPUT_AWS_REGION;
-  if (!region && INPUT_ECR_REGISTRY.includes('.amazonaws.com')) {
+  if (INPUT_ECR_REGISTRY.includes('.amazonaws.com')) {
     region = INPUT_ECR_REGISTRY.replace(/^.*\.dkr\.ecr\.(.*?)\.amazonaws\.com$/, '$1');
   }
 
   const registry = INPUT_ECR_REGISTRY.includes('.amazonaws.com') ? INPUT_ECR_REGISTRY :
     `${ INPUT_ECR_REGISTRY }.dkr.ecr.${ region }.amazonaws.com`;
 
-  await exec(`aws ecr get-login-password --profile ${ profile } --region ${ region } |` +
-             `docker login -u AWS ${ registry } --password-stdin`, { shell: '/bin/bash' });
+  await exec(`aws --profile ${ profile } ecr get-login-password --region ${ region } | ` +
+             `docker login -u AWS https://${ registry } --password-stdin`, { shell: '/bin/bash' });
 
   console.log(`Successfully logged into ECR registry ${ registry } [${ profile }]`);
 }

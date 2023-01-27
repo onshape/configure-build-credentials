@@ -1,0 +1,36 @@
+name: 'configure-build-credentials'
+description: 'Configure common credentials for Onshape build environments'
+inputs:
+  aws-profile:
+    description: 'AWS Profile name'
+    required: false
+    default: 'codebuild'
+  aws-access-key:
+    description: 'AWS Access Key'
+    required: false
+  aws-secret-key:
+    description: 'AWS Secret Access Key'
+    required: false
+  aws-region:
+    description: 'AWS Default Region'
+    required: false
+    default: 'us-west-2'
+  ecr-region:
+    description: 'ECR Region'
+    required: false
+  ecr-registry:
+    description: 'ECR Repository ID'
+    required: false
+  npm-token:
+    description: 'NPM Token'
+    required: false
+  ssh-key:
+    description: 'SSH Key'
+    required: false
+  ssh-key-name:
+    description: 'SSH Key name'
+    required: false
+    default: 'id_rsa'
+runs:
+  using: 'node18'
+  main: 'index.js'

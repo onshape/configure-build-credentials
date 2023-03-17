@@ -53,6 +53,10 @@ async function configureAwsCredentials () {
   await fs.writeFile(credentialsFile, credentials);
   await fs.chmod(credentialsFile, DEFAULT_FILE_MODE);
 
+  core.exportVariable('AWS_ACCESS_KEY_ID', INPUT_AWS_ACCESS_KEY);
+  core.exportVariable('AWS_SECRET_ACCESS_KEY', INPUT_AWS_SECRET_KEY);
+  core.exportVariable('AWS_DEFAULT_REGION', INPUT_AWS_REGION);
+
   console.log(`Configured AWS credentials for [${ INPUT_AWS_PROFILE }]`);
 }
 

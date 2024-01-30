@@ -36,5 +36,5 @@ inputs:
     required: false
     default: 'id_rsa'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'index.js'

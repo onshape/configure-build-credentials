@@ -35,6 +35,9 @@ inputs:
     description: 'SSH Key name'
     required: false
     default: 'id_rsa'
+  ssh-known-hosts:
+    description: 'SSH Known Hosts data'
+    required: false
 runs:
   using: 'node20'
   main: 'index.js'

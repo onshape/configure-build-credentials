@@ -26,6 +26,8 @@ const INPUT_NPM_TOKEN = core.getInput('npm-token');
 const INPUT_SSH_KEY = core.getInput('ssh-key');
 const INPUT_SSH_KEY_NAME = core.getInput('ssh-key-name');
 
+const INPUT_SSH_KNOWN_HOSTS = core.getInput('ssh-known-hosts');
+
 //////////
 
 async function configureAwsCredentials () {
@@ -101,6 +103,17 @@ async function configureSshKey () {
   console.log(`Configured SSH key "${ INPUT_SSH_KEY_NAME }"`);
 }
 
+async function configureSshKnownHosts () {
+  const directory = join(process.env.HOME, '.ssh');
+  await fs.mkdir(directory, { recursive: true });
+
+  const file = join(directory, 'known_hosts');
+  await fs.writeFile(file, INPUT_SSH_KNOWN_HOSTS);
+  await fs.chmod(file, DEFAULT_FILE_MODE);
+
+  console.log(`Configured SSH key "${ INPUT_SSH_KEY_NAME }"`);
+}
+
 //////////
 
 async function main () {
@@ -119,6 +132,10 @@ async function main () {
 
     if (INPUT_SSH_KEY) {
       await configureSshKey();
+    }
+
+    if (INPUT_SSH_KNOWN_HOSTS) {
+      await configureSshKnownHosts();
     }
   } catch (error) {
     core.setFailed(error.message);

@@ -60,6 +60,11 @@ The SSH key name, Default: `"id_rsa"`
 
 **Required** To create an ssh key you must specify `ssh-key`
 
+#### `ssh-known-hosts`
+
+The SSH known_hosts file contents
+
+
 ## Example usage
 ```yaml
 uses: onshape/configure-build-credentials@v1

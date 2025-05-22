@@ -38,6 +38,9 @@ inputs:
   ssh-known-hosts:
     description: 'SSH Known Hosts data'
     required: false
+  signed-commits-email:
+    description: 'Set up signed commits using the email specified'
+    required: false
 runs:
   using: 'node20'
   main: 'index.js'

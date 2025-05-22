@@ -28,6 +28,8 @@ const INPUT_SSH_KEY_NAME = core.getInput('ssh-key-name');
 
 const INPUT_SSH_KNOWN_HOSTS = core.getInput('ssh-known-hosts');
 
+const INPUT_SIGNED_COMMITS_EMAIL = core.getInput('signed-commits-email');
+
 //////////
 
 async function configureAwsCredentials () {
@@ -114,6 +116,32 @@ async function configureSshKnownHosts () {
   console.log(`Configured SSH key "${ INPUT_SSH_KEY_NAME }"`);
 }
 
+async function configureSignedCommitsEmail () {
+  const sshDir = join(process.env.HOME, '.ssh');
+  const privateKeyPath = join(sshDir, INPUT_SSH_KEY_NAME);
+
+  // Generate public key from private key
+  const pubKeyPath = `${ privateKeyPath }.pub`;
+  await exec(`ssh-keygen -y -f ${ privateKeyPath } > ${ pubKeyPath }`);
+  const pubKeyContent = (await fs.readFile(pubKeyPath, 'utf8')).trim();
+
+  // Configure Git to use SSH for signing
+  await exec('git config --global gpg.format ssh');
+  await exec(`git config --global user.signingkey ${ pubKeyPath }`);
+
+  // Setup allowed_signers file
+  const allowedSignersPath = join(sshDir, 'allowed_signers');
+  const allowedSignerEntry = `${ INPUT_SIGNED_COMMITS_EMAIL } namespaces="git" ${ pubKeyContent }\n`;
+  await fs.writeFile(allowedSignersPath, allowedSignerEntry);
+
+  // Configure Git to use allowed_signers file
+  await exec(`git config --global gpg.ssh.allowedSignersFile ${ allowedSignersPath }`);
+  await exec('git config --global commit.gpgsign true');
+  await exec('git config --global tag.gpgSign true');
+
+  console.log(`Configured Signed Commits for "${ INPUT_SIGNED_COMMITS_EMAIL }"`);
+}
+
 //////////
 
 async function main () {
@@ -136,6 +164,14 @@ async function main () {
 
     if (INPUT_SSH_KNOWN_HOSTS) {
       await configureSshKnownHosts();
+    }
+
+    if (INPUT_SIGNED_COMMITS_EMAIL) {
+      if (INPUT_SSH_KEY && INPUT_SSH_KEY_NAME) {
+        await configureSignedCommitsEmail();
+      } else {
+        throw new Error('signed-commits-email requires: ssh-key and ssh-key-name');
+      }
     }
   } catch (error) {
     core.setFailed(error.message);

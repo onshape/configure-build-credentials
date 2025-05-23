@@ -64,6 +64,11 @@ The SSH key name, Default: `"id_rsa"`
 
 The SSH known_hosts file contents
 
+#### `signed-commits-email`
+
+Set up sign commits
+
+**Required** To create signed commits you must specify `ssh-key-name` and `ssh-key`
 
 ## Example usage
 ```yaml

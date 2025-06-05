@@ -99,7 +99,8 @@ async function configureSshKey () {
   await fs.mkdir(directory, { recursive: true });
 
   const file = join(directory, INPUT_SSH_KEY_NAME);
-  await fs.writeFile(file, INPUT_SSH_KEY);
+  const keyWithNewline = INPUT_SSH_KEY.endsWith('\n') ? INPUT_SSH_KEY : INPUT_SSH_KEY + '\n';
+  await fs.writeFile(file, keyWithNewline);
   await fs.chmod(file, DEFAULT_FILE_MODE);
 
   console.log(`Configured SSH key "${ INPUT_SSH_KEY_NAME }"`);
